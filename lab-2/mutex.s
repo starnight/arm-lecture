@@ -9,14 +9,13 @@
 	.type lock_mutex, function
 lock_mutex:
         @ INSERT CODE BELOW
-	push {r3, r4}
-	ldr r4, =locked
+	ldr r1, =locked
 .L1:
-	ldr r3, [r0]
-	cmp r3, #0
+	ldrex r2, [r0]
+	cmp r2, #0
+	strexeq r2, r1, [r0]
+	cmpeq r2, #0
 	bne .L1
-	str r4, [r0]
-	pop {r3, r4}
         @ END CODE INSERT
 	bx lr
 
@@ -26,10 +25,8 @@ lock_mutex:
 	.type unlock_mutex, function
 unlock_mutex:
 	@ INSERT CODE BELOW
-    push {r4}
-	ldr r4, =unlocked
-	str r4, [r0]
-	pop {r4}
+	ldr r1, =unlocked
+	str r1, [r0]
         @ END CODE INSERT
 	bx lr
 	.size unlock_mutex, .-unlock_mutex
